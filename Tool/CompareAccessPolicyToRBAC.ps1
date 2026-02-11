@@ -73,7 +73,19 @@ $RBACDataActionsByIdentity = @{}
 $roleAssignments = Get-AzRoleAssignment -Scope $keyVault.ResourceId
 
 foreach ($ra in $roleAssignments) {
-    $assignedDataActions = (Get-AzRoleDefinition -Id $ra.RoleDefinitionId).DataActions
+    $cachedRoleDefinitionBlob = "{0}.json" -f $ra.RoleDefinitionId
+    $cachedRoleDefinitionBlob = ".role-definitions" | Join-Path -ChildPath $cachedRoleDefinitionBlob
+
+    $roleDefinition = Get-Content $cachedRoleDefinitionBlob -ErrorAction "SilentlyContinue"
+    if ($null -eq $roleDefinition) {
+        $roleDefinition = Get-AzRoleDefinition -Id $ra.RoleDefinitionId
+    }
+    else {
+        $roleDefinition = $roleDefinition | ConvertFrom-Json
+    }
+    $roleDefinition | ConvertTo-Json > $cachedRoleDefinitionBlob
+
+    $assignedDataActions = $roleDefinition.DataActions
     foreach ($ada in $assignedDataActions) {
         $ada = $ada.ToLower()
         # if all add all Key Vault RBAC data actions to per identity map
