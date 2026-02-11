@@ -1,4 +1,11 @@
-﻿Write-Output "`nKey Vault Access Policy to RBAC permissions comparison report to help with migration to RBAC permission model"
+﻿param (
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $KeyVaultName
+)
+
+Write-Output "`nKey Vault Access Policy to RBAC permissions comparison report to help with migration to RBAC permission model"
 Write-Output "It reads Access Policies in Key Vault and check if there is existing RBAC role assignment with same permissions"
 Write-Output "It will print only missing RBAC data actions for each security principal (user/app)"
 Write-Output "It does not cover over priviliged role assignments"
@@ -13,11 +20,10 @@ if ($mappingTable -eq $null) {
     break
 }
 
-$keyVaultName = Read-Host -Prompt 'Input Key Vault name for comparison'
 $keyVault = $null
-$keyVault = (Get-AzKeyVault -VaultName $keyVaultName)
-if ($keyVault -eq $null) {
-    Write-Error "Cannot access Key Vault $keyVaultName"
+$keyVault = (Get-AzKeyVault -VaultName $KeyVaultName)
+if ($null -eq $keyVault) {
+    Write-Error "Cannot access Key Vault $KeyVaultName"
     break
 }
 
