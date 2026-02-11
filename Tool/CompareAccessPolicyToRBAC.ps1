@@ -7,7 +7,7 @@ Write-Output "  - Compound Identity (user+app) is not supported`n`n"
 
 $mappingTable = $null
 #Read Access Policy RBAC Mapping
-$mappingTable = Import-Csv -Path ./AcessPolicyRBACMapping.csv 
+$mappingTable = Import-Csv -Path ./AcesssPolicyRBACMapping.csv 
 
 If($mappingTable -eq $null)
 {
